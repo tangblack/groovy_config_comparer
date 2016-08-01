@@ -21,6 +21,12 @@ def readConfigAndDistinguish(String path)
             return // Jump!
         }
 
+        // 移除無意義的註解 "#" 後面是空白
+        if (line.replaceFirst("#", "").trim().size() == 0)
+        {
+            return // Jump!
+        }
+
         if (line.startsWith("#"))
         {
             disableConfigList.add(line)
@@ -88,7 +94,7 @@ def findKeyValue(String inputConfig)
         key = stringArray[0].trim()
         if (key.startsWith("#"))
         {
-            key = key.substring(1) // "#CONFIG_FOO" -> "CONFIG_FOO"
+            key = key.substring(1).trim() // "#CONFIG_FOO" -> "CONFIG_FOO", "# CONFIG_FOO" -> "CONFIG_FOO"
         }
         if (key.indexOf(" ") > -1)
         {
@@ -101,7 +107,7 @@ def findKeyValue(String inputConfig)
         key = stringArray[0].trim()
         if (key.startsWith("#"))
         {
-            key = key.substring(1) // "#CONFIG_FOO" -> "CONFIG_FOO"
+            key = key.substring(1).trim() // "#CONFIG_FOO" -> "CONFIG_FOO", "# CONFIG_FOO" -> "CONFIG_FOO"
         }
 
         String value = stringArray[1].trim()
@@ -126,12 +132,13 @@ def log(String message)
 }
 
 
-
+// 在終端機執行以下指令
+// groovy --encoding=UTF-8 config_comparer.groovy > result.txt
 
 // 主程式開始
 // 應該修改路徑就夠用了！！
-String configAFilePath = "/Users/tangblack/IdeaProjects/groovy_mine/config_comparer/src/com/tangblack/configcomparer/test/config_a.txt"
-String configBFilePath = "/Users/tangblack/IdeaProjects/groovy_mine/config_comparer/src/com/tangblack/configcomparer/test/config_b.txt"
+String configAFilePath = "/Users/tangblack/IdeaProjects/groovy_mine/config_comparer/src/com/tangblack/configcomparer/test/project_a.defconfig"
+String configBFilePath = "/Users/tangblack/IdeaProjects/groovy_mine/config_comparer/src/com/tangblack/configcomparer/test/platform_b.defconfig"
 
 
 // 先找出第一個檔案中所有設定，並區分是否有開啟設定
@@ -149,7 +156,7 @@ configAEnableConfigList.each {config ->
     List findConfigList = compare(config, configBConfigList)
     if (findConfigList.size() == 0)
     {
-        println("$config -> 沒有找到")
+//        println("$config -> 沒有找到")
     }
     else
     {
@@ -161,7 +168,7 @@ configADisableConfigList.each {config ->
     List findConfigList = compare(config, configBConfigList)
     if (findConfigList.size() == 0)
     {
-        println("$config -> 沒有找到")
+//        println("$config -> 沒有找到")
     }
     else
     {
