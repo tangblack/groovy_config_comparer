@@ -1,0 +1,7 @@
+CONFIG_AA_BB_CC=”y”
+
+#CONFIG_CC_DD is not set
+
+#CONFIG_EE_FF_GG_HH is not set
+
+CONFIG_1234=”y”
