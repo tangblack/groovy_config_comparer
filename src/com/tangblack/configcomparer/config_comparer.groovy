@@ -66,23 +66,7 @@ def readConfig(String path)
 
 def compare(String inputConfig, List inputConfigList)
 {
-    String key
-    String[] stringArray = inputConfig.split("=")
-    if (stringArray.size() == 1)
-    {
-        key = stringArray[0].trim()
-        log("inputConfig is $inputConfig, key is $key")
-    }
-    else if (stringArray.size() == 2)
-    {
-        key = stringArray[0].trim()
-        String value = stringArray[1].trim()
-        log("inputConfig is $inputConfig, key is $key, value is $value")
-    }
-    else
-    {
-        throw new RuntimeException("Illegal format, inputConfig=$inputConfig")
-    }
+    String key = findKeyValue(inputConfig)
 
     List findConfigList = new ArrayList()
     inputConfigList.each {String config ->
@@ -93,6 +77,42 @@ def compare(String inputConfig, List inputConfigList)
     }
 
     return findConfigList
+}
+
+def findKeyValue(String inputConfig)
+{
+    String key
+    String[] stringArray = inputConfig.split("=")
+    if (stringArray.size() == 1) // #CONFIG_FOO is not set -> "CONFIG_FOO"
+    {
+        key = stringArray[0].trim()
+        if (key.startsWith("#"))
+        {
+            key = key.substring(1) // "#CONFIG_FOO" -> "CONFIG_FOO"
+        }
+        if (key.indexOf(" ") > -1)
+        {
+            key = key.substring(0, key.indexOf(" ")) // "CONFIG_FOO is not set" -> "CONFIG_FOO"
+        }
+        log("inputConfig is $inputConfig, key is $key")
+    }
+    else if (stringArray.size() == 2) // CONFIG_FOO="y" -> "CONFIG_FOO" "y" | #CONFIG_FOO="y" -> "CONFIG_FOO" "y"
+    {
+        key = stringArray[0].trim()
+        if (key.startsWith("#"))
+        {
+            key = key.substring(1) // "#CONFIG_FOO" -> "CONFIG_FOO"
+        }
+
+        String value = stringArray[1].trim()
+        log("inputConfig is $inputConfig, key is $key, value is $value")
+    }
+    else
+    {
+        throw new RuntimeException("Illegal format, inputConfig=$inputConfig")
+    }
+
+    return key
 }
 
 def log(String message)
